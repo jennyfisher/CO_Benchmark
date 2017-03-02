@@ -1,0 +1,46 @@
+###############################################################################
+#####         INPUT FILE FOR 1-YEAR BENCHMARK PLOTTING PROGRAMS           #####
+#####    Define dirs, model names, and other relevant quantities here     #####
+#####                                                                     #####
+##### V[123] = Version Number                                             #####
+##### D[123] = Directory with files                                       #####
+##### L[123] = Label used to identify netCDF file names                   #####
+##### M[123] = Model name                                                 #####
+##### P[123] = File with pressure fields                                  #####
+##### R[123] = Model resolution                                           #####
+##### C[123] = Category (diagnostic) where CO is stored                   #####
+##### Y[123] = Year of simulation                                         #####
+###############################################################################
+
+##### Parameters for 1st model (red) #####
+V1: old_tagCO
+T1: yes
+D1: /short/m19/jaf574/runs/run.tagCO_HO2uptake.2x25.v9-01-03.vORIG/netcdf/
+L1: oldtagCO.2009
+P1: /short/m19/jaf574/GC_fields/PSURF.geos5_47L.2x25.2009
+M1: GEOS5_47L
+R1: 2
+C1: IJ-AVG
+Y1: 2009
+
+##### Parameters for 2nd model (blue) #####
+V2: new_tagCO
+T2: yes
+D2: /short/m19/jaf574/runs/run.tagCO_HO2uptake.2x25.v9-01-03/netcdf/
+L2: newtagCO.2009
+P2: /short/m19/jaf574/GC_fields/PSURF.geos5_47L.2x25.2009
+M2: GEOS5_47L
+R2: 2
+C2: IJ-AVG
+Y2: 2009
+
+##### Parameters for 3rd model (green) #####
+V3: full_chemistry
+T3: yes
+D3: /short/m19/jaf574/runs/run.HO2uptake.2x25.v9-01-03/netcdf/
+L3: fullchem.2009
+P3: /short/m19/jaf574/GC_fields/PSURF.geos5_47L.2x25.2009
+M3: GEOS5_47L
+R3: 2
+C3: IJ-AVG
+Y3: 2009
