@@ -1,6 +1,6 @@
 ; $Id: all_stations_ships_geos.pro,v 1.3 2008/03/31 18:51:06 bmy Exp $
-pro all_stations_ships_geos, species1, species, max_sta, pref,  indyear, $
-                             ptop,     dlon,    dlat,    model, ext, debug=debug
+pro all_stations_ships_geos, species, category, max_sta, pref,  indyear, $
+                             ptop,    dlon,     dlat,    model, ext, debug=debug
 
    ; ALL_STATIONS_SHIPS_GEOS: Saves out files of "average" GEOS-Chem data
    ; over the same area as various ship tracks.  Originally written by 
@@ -13,7 +13,7 @@ pro all_stations_ships_geos, species1, species, max_sta, pref,  indyear, $
    Type1 = CTM_Type( Model, Res=[ DLon, DLat ] )
 
    ; Define stuff
-   filest     = './data/'+species1+'.ships'
+   filest     = './data/'+species+'.ships'
    openr, usta, filest, /get_lun
    iname_sta  = ''
    ititle_sta = ''
@@ -55,7 +55,7 @@ pro all_stations_ships_geos, species1, species, max_sta, pref,  indyear, $
 
       ; Get data from the model
       if keyword_set(debug) then print,' -- Reading model file '+name
-      Datatmp = Get_Species_Geos( name, Species='IJ-AVG-S__'+Species1 )
+      Datatmp = Get_Species_Geos( name, Species=Category+Species )
 
       if i eq 0 then begin
          D = size(Datatmp,/dim)

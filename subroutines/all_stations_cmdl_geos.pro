@@ -1,6 +1,6 @@
 ; $Id: all_stations_cmdl_geos.pro,v 1.3 2008/03/31 18:51:06 bmy Exp $
-pro all_stations_cmdl_geos, species1, species, max_sta, pref,  plabel,     $
-                            ptop,     dlat,    dlon,    model, ext, debug=debug
+pro all_stations_cmdl_geos, species, category, max_sta, pref,  plabel,     $
+                            ptop,    dlat,     dlon,    model, ext, debug=debug
            
    ; ALL_STATIONS_CMDL_GEOS: Saves out files of GEOS-Chem data at
    ; various CMDL stations.  Originally written by Inna Megretskaia, 
@@ -59,7 +59,7 @@ pro all_stations_cmdl_geos, species1, species, max_sta, pref,  plabel,     $
       if keyword_set(debug) then print,' -- Reading model file '+name
 
       ; Read CO and pressure
-      COtmp       = Get_Species_Geos(  Name, Species='IJ-AVG-S__CO' )
+      COtmp       = Get_Species_Geos(  Name, Species=Category+Species )
       Pressuretmp = Get_Pressure_Geos( PName, PTOP=PTOP, Lat=Lat, Lon=Lon )
 
       if i eq 0 then begin

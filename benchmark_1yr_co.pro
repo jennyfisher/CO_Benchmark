@@ -50,10 +50,15 @@
 ;        
 ;        /DO_RATIOS -> Set this switch to produce ratio maps at the surface
 ;             and at 500 hPa.
+;        
+;        /DO_ALL -> Set this switch to make all possible plots
 ;
 ;        /DYNRANGE -> Set this switch to produce difference, ratio,
 ;             and longitudinal profile plots using the entire dynamic
 ;             range of the data (instead of the preset ranges).
+;
+;        /InvDiff -> Set this switch to invert the sign of differences
+;             (e.g. Model1-Model3 instead of Model3-Model1)
 ;
 ; OUTPUTS:
 ;        None
@@ -96,6 +101,7 @@
 ;        ccc, 01 Oct 2010  - Updated station files for CO for MOZAIC and
 ;                            surface data. Also, extended the yrange for
 ;                            MOZAIC seasonal plots close to surface.
+;        jaf, 2017         - Adapt for CO, cleanup. Further notes via git.
 ;
 ;-
 ; Copyright (C) 2007-2009, Inna Megretskaia, Lin Zhang,
@@ -140,6 +146,7 @@ pro BenchMark_1yr_CO, InputFile,                                     $
                    Do_Diffs=Do_Diffs,       Do_Ratios=Do_Ratios,     $
                    Do_Aircraft=Do_Aircraft, Do_ALL=Do_ALL,           $
                    DynRange=DynRange,       CMDL_1PG = CMDL_1PG,     $
+                   InvDiff=InvDiff,                                  $
 		   _EXTRA=e
 
    ;====================================================================
@@ -218,8 +225,8 @@ pro BenchMark_1yr_CO, InputFile,                                     $
    Dlon1      = GridInfo1.DI
    Ptop1      = GridInfo1.Pedge[ GridInfo1.LMX ]
    Nalt1      = GridInfo1.LMX
-   LongCat1   = Cat1+'-S__CO'
-   ShortCat1  = Cat1+'-$'
+   NC_Cat1    = Cat1+'-S__'
+   BP_Cat1    = Cat1+'-$'
 
    ; For 2nd model
    PREF2      = Dir2 + Label2
@@ -229,8 +236,8 @@ pro BenchMark_1yr_CO, InputFile,                                     $
    Dlon2      = GridInfo2.DI
    Ptop2      = GridInfo2.Pedge[ GridInfo2.LMX ]
    Nalt2      = GridInfo2.LMX
-   LongCat2   = Cat2+'-S__CO'
-   ShortCat2  = Cat2+'-$'
+   NC_Cat2    = Cat2+'-S__'
+   BP_Cat2    = Cat2+'-$'
 
    ; For 3rd model
    PREF3      = Dir3 + Label3
@@ -240,8 +247,8 @@ pro BenchMark_1yr_CO, InputFile,                                     $
    Dlon3      = GridInfo3.DI
    Ptop3      = GridInfo3.Pedge[ GridInfo3.LMX ]
    Nalt3      = GridInfo3.LMX
-   LongCat3   = Cat3+'-S__CO'
-   ShortCat3  = Cat3+'-$'
+   NC_Cat3    = Cat3+'-S__'
+   BP_Cat3    = Cat3+'-$'
 
    ; Pressure file specified? If not use regular file
    if n_elements(PLabel1) eq 0 then PLabel1 = PREF1
@@ -275,6 +282,7 @@ pro BenchMark_1yr_CO, InputFile,                                     $
    Do_Diffs    = Keyword_Set( Do_Diffs    )
    Do_Ratios   = Keyword_Set( Do_Ratios   )   
    DynRange    = Keyword_Set( DynRange    )
+   InvDiff     = Keyword_Set( InvDiff     )
 
    if Keyword_Set( Do_ALL ) then begin
       Do_CMDL     = 1
@@ -397,9 +405,10 @@ pro BenchMark_1yr_CO, InputFile,                                     $
 
       ; Create the profile plots
       Profiles_1yr, Files, AltRange, Tracers, Versions,        $
-                    Categ = [ShortCat1, ShortCat2, ShortCat3], $
+                    Categ = [BP_Cat1, BP_Cat2, BP_Cat3],       $
                     Month='Jan', DynRange=DynRange,            $
-                    /PS,         OutFileName=PSName, _EXTRA=e
+                    SLat=0, NLat=30, $
+                    /PS,         OutFileName=PSName, InvDiff=InvDiff,_EXTRA=e
 
       ;---------------
       ; April
@@ -411,9 +420,10 @@ pro BenchMark_1yr_CO, InputFile,                                     $
 
       ; Create the profile plots
       Profiles_1yr, Files, AltRange, Tracers, Versions,        $
-                    Categ = [ShortCat1, ShortCat2, ShortCat3], $
+                    Categ = [BP_Cat1, BP_Cat2, BP_Cat3],       $
                     Month='Apr', DynRange=DynRange,            $
-                    /PS,         OutFileName=PSName, _EXTRA=e
+                    SLat=0, NLat=30, $
+                    /PS,         OutFileName=PSName, InvDiff=InvDiff,_EXTRA=e
 
       ;---------------
       ; July
@@ -425,9 +435,10 @@ pro BenchMark_1yr_CO, InputFile,                                     $
 
       ; Create the profile plots
       Profiles_1yr, Files, AltRange, Tracers, Versions,        $
-                    Categ = [ShortCat1, ShortCat2, ShortCat3], $
+                    Categ = [BP_Cat1, BP_Cat2, BP_Cat3],       $
                     Month='Jul', DynRange=DynRange,            $
-                    /PS,         OutFileName=PSName, _EXTRA=e
+                    SLat=0, NLat=30, $
+                    /PS,         OutFileName=PSName, InvDiff=InvDiff,_EXTRA=e
 
       ;---------------
       ; October
@@ -439,9 +450,10 @@ pro BenchMark_1yr_CO, InputFile,                                     $
 
       ; Create the profile plots
       Profiles_1yr, Files, AltRange, Tracers, Versions,        $
-                    Categ = [ShortCat1, ShortCat2, ShortCat3], $
+                    Categ = [BP_Cat1, BP_Cat2, BP_Cat3],       $
                     Month='Oct', DynRange=DynRange,            $
-                    /PS,         OutFileName=PSName, _EXTRA=e
+                    SLat=0, NLat=30, $
+                    /PS,         OutFileName=PSName, InvDiff=InvDiff,_EXTRA=e
 
    endif
 
@@ -473,8 +485,9 @@ pro BenchMark_1yr_CO, InputFile,                                     $
 
       ; Create the profile plots
       Differences_1yr, Files, Tracers, Versions,                   $
+                       Categ = [BP_Cat1, BP_Cat2, BP_Cat3],        $
                        Month='Jan', DynRange=DynRange,             $
-                       /PS,         OutFileName=PSName, _EXTRA=e
+                       /PS,         OutFileName=PSName, InvDiff=InvDiff, _EXTRA=e
 
       ;---------------
       ; April
@@ -486,8 +499,9 @@ pro BenchMark_1yr_CO, InputFile,                                     $
 
       ; Create the profile plots
       Differences_1yr, Files, Tracers, Versions,                   $
+                       Categ = [BP_Cat1, BP_Cat2, BP_Cat3],        $
                        Month='Apr', DynRange=DynRange,             $
-                       /PS,         OutFileName=PSName, _EXTRA=e
+                       /PS,         OutFileName=PSName, InvDiff=InvDiff, _EXTRA=e
 
       ;---------------
       ; July
@@ -499,8 +513,9 @@ pro BenchMark_1yr_CO, InputFile,                                     $
 
       ; Create the profile plots
       Differences_1yr, Files, Tracers, Versions,                   $
+                       Categ = [BP_Cat1, BP_Cat2, BP_Cat3],        $
                        Month='Jul', DynRange=DynRange,             $
-                       /PS,         OutFileName=PSName, _EXTRA=e
+                       /PS,         OutFileName=PSName, InvDiff=InvDiff, _EXTRA=e
 
       ;---------------
       ; October
@@ -512,8 +527,9 @@ pro BenchMark_1yr_CO, InputFile,                                     $
 
       ; Create the profile plots
       Differences_1yr, Files, Tracers, Versions,                   $
+                       Categ = [BP_Cat1, BP_Cat2, BP_Cat3],        $
                        Month='Oct', DynRange=DynRange,             $
-                       /PS,         OutFileName=PSName, _EXTRA=e
+                       /PS,         OutFileName=PSName, InvDiff=InvDiff, _EXTRA=e
 
    endif
 
@@ -542,8 +558,9 @@ pro BenchMark_1yr_CO, InputFile,                                     $
 
       ; Create the profile plots
       Ratios_1yr, Files, Tracers, Versions,                        $
+                  Categ = [BP_Cat1, BP_Cat2, BP_Cat3],             $
                   Month='Jan', DynRange=DynRange,                  $
-                  /PS,         OutFileName=PSName, _EXTRA=e
+                  /PS,         OutFileName=PSName, InvDiff=InvDiff, _EXTRA=e
 
       ;---------------
       ; April
@@ -555,8 +572,9 @@ pro BenchMark_1yr_CO, InputFile,                                     $
 
       ; Create the profile plots
       Ratios_1yr, Files, Tracers, Versions,                        $
+                  Categ = [BP_Cat1, BP_Cat2, BP_Cat3],             $
                   Month='Apr', DynRange=DynRange,                  $
-                  /PS,         OutFileName=PSName, _EXTRA=e
+                  /PS,         OutFileName=PSName, InvDiff=InvDiff, _EXTRA=e
 
       ;---------------
       ; July
@@ -568,8 +586,9 @@ pro BenchMark_1yr_CO, InputFile,                                     $
 
       ; Create the profile plots
       Ratios_1yr, Files, Tracers, Versions,                        $
+                  Categ = [BP_Cat1, BP_Cat2, BP_Cat3],             $
                   Month='Jul', DynRange=DynRange,                  $
-                  /PS,         OutFileName=PSName, _EXTRA=e
+                  /PS,         OutFileName=PSName, InvDiff=InvDiff, _EXTRA=e
 
       ;---------------
       ; October
@@ -581,8 +600,9 @@ pro BenchMark_1yr_CO, InputFile,                                     $
 
       ; Create the profile plots
       Ratios_1yr, Files, Tracers, Versions,                        $
+                  Categ = [BP_Cat1, BP_Cat2, BP_Cat3],             $
                   Month='Oct', DynRange=DynRange,                  $
-                  /PS,         OutFileName=PSName, _EXTRA=e
+                  /PS,         OutFileName=PSName, InvDiff=InvDiff, _EXTRA=e
 
    endif
 
@@ -591,38 +611,38 @@ pro BenchMark_1yr_CO, InputFile,                                     $
    ;====================================================================
    if ( DO_CMDL ) then begin
    
-;      ;-----------------------------------------------------------------
-;      ; %%%%% PLOTS OF MODELS vs. SURFACE CO DATA %%%%%
-;      ;-----------------------------------------------------------------
-;      print, 'IDL_CO: Plot models vs. surface CO data'
-;   
-;      if ( CMDL_1PG ) then begin
-;      ;-----------------------------------------------------------------
-;      Print, '-----Ground CO short'
-;      ;-----------------------------------------------------------------
-;      FilEst    = './data/Sites.ground.CO.short'
-;      Max_Sta   = 16
-;      PSName    = PSDir + 'surface.CO.geos.1page.' + RunName + '.ps'
-;      Plot_surface_co_geos_3_models, Pref1, Ptop1,  Dlat1,   Dlon1, Model1, $
-;                                     Pref2, Ptop2,  Dlat2,   Dlon2, Model2, $
-;                                     Pref3, Ptop3,  Dlat3,   Dlon3, Model3, $
-;                                     LongCat1,  LongCat2,   LongCat3,       $
-;                                     PLabel1,  PLabel2,   PLabel3,          $
-;                                     Title, PSName, Max_Sta, FilEst, Debug = Debug
-;      endif
-;   
-;      ;-----------------------------------------------------------------
-;      Print, '-----Ground CO 1'
-;      ;-----------------------------------------------------------------
-;      FilEst    = './data/Sites.ground.CO.2005'
-;      Max_Sta   = 42
-;      PSName    = PSDir + 'surface.CO.geos.' + RunName + '.ps'
-;      Plot_surface_co_geos_3_models, Pref1, Ptop1,  Dlat1,   Dlon1, Model1, $
-;                                     Pref2, Ptop2,  Dlat2,   Dlon2, Model2, $
-;                                     Pref3, Ptop3,  Dlat3,   Dlon3, Model3, $
-;                                     LongCat1,  LongCat2,   LongCat3,       $
-;                                     PLabel1,  PLabel2,   PLabel3,          $
-;                                     Title, PSName, Max_Sta, FilEst, Debug = Debug
+      ;-----------------------------------------------------------------
+      ; %%%%% PLOTS OF MODELS vs. SURFACE CO DATA %%%%%
+      ;-----------------------------------------------------------------
+      print, 'IDL_CO: Plot models vs. surface CO data'
+   
+      if ( CMDL_1PG ) then begin
+      ;-----------------------------------------------------------------
+      Print, '-----Ground CO short'
+      ;-----------------------------------------------------------------
+      FilEst    = './data/Sites.ground.CO.short'
+      Max_Sta   = 16
+      PSName    = PSDir + 'surface.CO.geos.1page.' + RunName + '.ps'
+      Plot_surface_co_geos_3_models, Pref1, Ptop1,  Dlat1,   Dlon1, Model1, $
+                                     Pref2, Ptop2,  Dlat2,   Dlon2, Model2, $
+                                     Pref3, Ptop3,  Dlat3,   Dlon3, Model3, $
+                                     NC_Cat1,  NC_Cat2,   NC_Cat3,       $
+                                     PLabel1,  PLabel2,   PLabel3,          $
+                                     Title, PSName, Max_Sta, FilEst, Debug = Debug
+      endif
+   
+      ;-----------------------------------------------------------------
+      Print, '-----Ground CO 1'
+      ;-----------------------------------------------------------------
+      FilEst    = './data/Sites.ground.CO.2005'
+      Max_Sta   = 42
+      PSName    = PSDir + 'surface.CO.geos.' + RunName + '.ps'
+      Plot_surface_co_geos_3_models, Pref1, Ptop1,  Dlat1,   Dlon1, Model1, $
+                                     Pref2, Ptop2,  Dlat2,   Dlon2, Model2, $
+                                     Pref3, Ptop3,  Dlat3,   Dlon3, Model3, $
+                                     NC_Cat1,  NC_Cat2,   NC_Cat3,       $
+                                     PLabel1,  PLabel2,   PLabel3,          $
+                                     Title, PSName, Max_Sta, FilEst, Debug = Debug
    
       ;-----------------------------------------------------------------
       ; %%%%% PLOTS OF MODELS vs. CMDL and SHIP CO DATA %%%%%
@@ -633,13 +653,13 @@ pro BenchMark_1yr_CO, InputFile,                                     $
       print, '-----Reading CMDL data'
       ;-----------------------------------------------------------------
       all_stations_cmdl_geos, $
-         'CO',Cat1,39, Pref1, PLabel1, Ptop1, Dlat1, Dlon1, Model1, '.1', $
+         'CO',NC_Cat1,39, Pref1, PLabel1, Ptop1, Dlat1, Dlon1, Model1, '.1', $
           Debug = Debug
       all_stations_cmdl_geos, $
-         'CO',Cat2,39, Pref2, PLabel2, Ptop2, Dlat2, Dlon2, Model2, '.2', $
+         'CO',NC_Cat2,39, Pref2, PLabel2, Ptop2, Dlat2, Dlon2, Model2, '.2', $
           Debug = Debug
       all_stations_cmdl_geos, $
-         'CO',Cat3,39, Pref3, PLabel3, Ptop3, Dlat3, Dlon3, Model3, '.3', $
+         'CO',NC_Cat3,39, Pref3, PLabel3, Ptop3, Dlat3, Dlon3, Model3, '.3', $
           Debug = Debug
    
       ;-----------------------------------------------------------------
@@ -649,27 +669,27 @@ pro BenchMark_1yr_CO, InputFile,                                     $
       Plot_cmdl_3_models_4_months, '.1', '.2', '.3', title,PSName
    
    
-;      ;-----------------------------------------------------------------
-;      print, '-----Reading ship data'
-;      ;-----------------------------------------------------------------
-;      all_stations_ships_geos, $
-;         'CO',Cat1, 13, Pref1, 0, Ptop1, Dlon1, Dlat1, Model1, '.1', Debug = Debug
-;      all_stations_ships_geos, $
-;         'CO',Cat2, 13, Pref2, 0, Ptop2, Dlon2, Dlat2, Model2, '.2', Debug = Debug
-;      all_stations_ships_geos, $
-;         'CO',Cat3, 13, Pref3, 0, Ptop3, Dlon3, Dlat3, Model3, '.3', Debug = Debug
-;   
-;      ;-----------------------------------------------------------------
-;      print, '-----Ship CO'
-;      ;-----------------------------------------------------------------
-;      PSName = PSDir + 'CO.ships.geos.' + RunName + '.ps'
-;      Plot_ships_3_models_co, '.1', '.2', '.3', title, PSName
-;   
-;      ;-----------------------------------------------------------------
-;      print, '-----Ship tracks 4 months'
-;      ;-----------------------------------------------------------------
-;      PSName = PSDir + 'CO.ships.geos.4.months.' + RunName + '.ps'
-;      Plot_ships_3_models_4_months, '.1', '.2', '.3', title, PSName
+      ;-----------------------------------------------------------------
+      print, '-----Reading ship data'
+      ;-----------------------------------------------------------------
+      all_stations_ships_geos, $
+         'CO',NC_Cat1, 13, Pref1, 0, Ptop1, Dlon1, Dlat1, Model1, '.1', Debug = Debug
+      all_stations_ships_geos, $
+         'CO',NC_Cat2, 13, Pref2, 0, Ptop2, Dlon2, Dlat2, Model2, '.2', Debug = Debug
+      all_stations_ships_geos, $
+         'CO',NC_Cat3, 13, Pref3, 0, Ptop3, Dlon3, Dlat3, Model3, '.3', Debug = Debug
+   
+      ;-----------------------------------------------------------------
+      print, '-----Ship CO'
+      ;-----------------------------------------------------------------
+      PSName = PSDir + 'CO.ships.geos.' + RunName + '.ps'
+      Plot_ships_3_models_co, '.1', '.2', '.3', title, PSName
+   
+      ;-----------------------------------------------------------------
+      print, '-----Ship tracks 4 months'
+      ;-----------------------------------------------------------------
+      PSName = PSDir + 'CO.ships.geos.4.months.' + RunName + '.ps'
+      Plot_ships_3_models_4_months, '.1', '.2', '.3', title, PSName
    
       ; Close files & clean up
       Close, /all
@@ -691,13 +711,13 @@ pro BenchMark_1yr_CO, InputFile,                                     $
       ;-----------------------------------------------------------------
 
       all_stations_geos_mozaic, $
-         'CO', Cat1, 36, Pref1, Plabel1, Ptop1, Dlon1, Dlat1, Model1, '.1', $
+         'CO', NC_Cat1, 36, Pref1, Plabel1, Ptop1, Dlon1, Dlat1, Model1, '.1', $
           Debug = Debug
       all_stations_geos_mozaic, $
-         'CO', Cat2, 36, Pref2, Plabel3, Ptop2, Dlon2, Dlat2, Model2, '.2', $
+         'CO', NC_Cat2, 36, Pref2, Plabel3, Ptop2, Dlon2, Dlat2, Model2, '.2', $
           Debug = Debug
       all_stations_geos_mozaic, $
-         'CO', Cat3, 36, Pref3, Plabel3, Ptop3, Dlon3, Dlat3, Model3, '.3', $
+         'CO', NC_Cat3, 36, Pref3, Plabel3, Ptop3, Dlon3, Dlat3, Model3, '.3', $
           Debug = Debug
 
       ;--------------------------------------------------------
@@ -714,6 +734,7 @@ pro BenchMark_1yr_CO, InputFile,                                     $
                                        Pref2, Ptop2, Dlat2, Dlon2, Model2, $
                                        Pref3, Ptop3, Dlat3, Dlon3, Model3, $
                                        PLabel1,  PLabel2,   PLabel3,       $
+                                       NC_Cat1,  NC_Cat2,   NC_Cat3,       $
                                        title, PSName, Max_Station, FilEst
 
       ; (2) seasonal plots at 4 levels
@@ -723,6 +744,7 @@ pro BenchMark_1yr_CO, InputFile,                                     $
                                          Pref2, Ptop2, Dlat2, Dlon2, Model2, $
                                          Pref3, Ptop3, Dlat3, Dlon3, Model3, $
                                          PLabel1,  PLabel2,   PLabel3,       $
+                                         NC_cat1,  NC_cat2,   NC_cat3,       $
                                          title, PSName, 15, FilEst, Debug = Debug
 
       ; Close files & cleanup
@@ -746,13 +768,13 @@ pro BenchMark_1yr_CO, InputFile,                                     $
 
       ; Read stations
       all_stations_geos, $
-         'CO', LongCat1, 44, pref1, PLabel1, ptop1, dlon1, dlat1, model1, '.1', $
+         'CO', NC_Cat1, 44, pref1, PLabel1, ptop1, dlon1, dlat1, model1, '.1', $
          debug = debug
       all_stations_geos, $
-         'CO', LongCat2, 44, pref2, PLabel2, ptop2, dlon2, dlat2, model2, '.2', $
+         'CO', NC_Cat2, 44, pref2, PLabel2, ptop2, dlon2, dlat2, model2, '.2', $
          debug = debug
       all_stations_geos, $
-         'CO', LongCat3, 44, pref3, PLabel3, ptop3, dlon3, dlat3, model3, '.3', $
+         'CO', NC_Cat3, 44, pref3, PLabel3, ptop3, dlon3, dlat3, model3, '.3', $
          debug = debug
 
       ; Plot
@@ -773,7 +795,7 @@ pro BenchMark_1yr_CO, InputFile,                                     $
 
    ; Remove file links
    Cmd = 'rm -f diaginfo.dat tracerinfo.dat'
-   if ( Debug ) then print, Cmd
+   if ( DO_Debug ) then print, Cmd
    Spawn, Cmd
 
 end

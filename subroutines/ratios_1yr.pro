@@ -103,7 +103,7 @@
 
 pro PlotRatios, Data1,       Data2,       Version1,    Version2, $
                 TracerName,  GridInfo,    Unit,        DynRange, $
-                Month,       L_Sfc=L_Sfc, L_500=L_500, _EXTRA=e
+                Month,       L_Sfc=L_Sfc, L_500=L_500, InvDiff=InvDiff, _EXTRA=e
    
    ;====================================================================
    ; Internal routine PLOTDIFF plots either the surface or 500 hPa
@@ -111,7 +111,10 @@ pro PlotRatios, Data1,       Data2,       Version1,    Version2, $
    ;====================================================================
 
    ; Version string
-   VerStr = Version2 + ' - ' + Version1
+   if ( Keyword_Set( InvDiff ) ) then      $
+      VerStr = Version1 + ' - ' + Version2 $
+   else                                    $
+      VerStr = Version2 + ' - ' + Version1
  
    ; Plot title for surface
    if ( Keyword_Set( L_Sfc ) )                                  $
@@ -129,6 +132,9 @@ pro PlotRatios, Data1,       Data2,       Version1,    Version2, $
 
    ; Take the ratio "new" / "old"
    Ratio = Data2 / Data1
+
+   ; Plot Data1 / Data2 if requested
+   if ( Keyword_Set( InvDiff ) ) then Ratio = 1. / Ratio
 
    ; Replace non-finite points with a missing-data value
    Ind = Where( ~Finite( Ratio ) )
@@ -198,8 +204,9 @@ end
 ;------------------------------------------------------------------------------
 
 pro Ratios_1yr, Files,             Tracers,     Versions,                $
+                Categories = Categories,                                 $
                 DynRange=DynRange, PS=PS,       OutFileName=OutFileName, $
-                Month=Month,       DiagN=DiagN, _EXTRA=e
+                Month=Month,       InvDiff=InvDiff, _EXTRA=e
  
    ;====================================================================
    ; Initialization
@@ -211,12 +218,21 @@ pro Ratios_1yr, Files,             Tracers,     Versions,                $
    ; Arguments
    if ( N_Elements( Files    ) ne 3 ) then Message, 'Invalid FILES!'
    if ( N_Elements( Versions ) ne 3 ) then Message, 'Invalid VERSIONS!'
-   if ( N_Elements( DiagN    ) eq 0 ) then Diagn = 'IJ-AVG-$'
+   if ( N_elements( Categories  ) eq 0 ) then begin
+      Cat1 = 'IJ-AVG-$'
+      Cat2 = 'IJ-AVG-$'
+      Cat3 = 'IJ-AVG-$'
+   endif else begin
+      Cat1 = Categories[0]
+      Cat2 = Categories[1]
+      Cat3 = Categories[2]
+   endelse
    
    ; Arguments
    DynRange = Keyword_Set( DynRange )
    if ( N_Elements( Month       ) ne 1 ) then Month       = ''
    if ( N_Elements( OutFileName ) ne 1 ) then OutFileName = 'ratios.ps'
+   if ~Keyword_Set( InvDiff ) then InvDiff = 0
 
    ; Title for the top of the plot
    TopTitle = 'GEOS-Chem Ratio Maps at surface and 500 hPa!C!C'
@@ -237,15 +253,15 @@ pro Ratios_1yr, Files,             Tracers,     Versions,                $
    ;====================================================================
    
    ; Read tracers from the 1st file (red data pts)
-   CTM_Get_Data, DataInfo_1, 'IJ-AVG-$', $
+   CTM_Get_Data, DataInfo_1, Cat1, $
       File=Files[0], Tracer=Tracers, /Quiet
 
    ; Read tracers from the 2nd file (green data pts)
-   CTM_Get_Data, DataInfo_2, 'IJ-AVG-$', $
+   CTM_Get_Data, DataInfo_2, Cat2, $
       File=Files[1], Tracer=Tracers, /Quiet
 
    ; Read tracers from the 3rd file (blue data pts)
-   CTM_Get_Data, DataInfo_3, 'IJ-AVG-$', $
+   CTM_Get_Data, DataInfo_3, Cat3, $
       File=Files[2], Tracer=Tracers, /Quiet
 
    ;------------------------------
@@ -370,22 +386,22 @@ pro Ratios_1yr, Files,             Tracers,     Versions,                $
       ; "Blue" - "Green" at Sfc
       PlotRatios, Data_Sfc_2,   Data_Sfc_3, Versions[1], Versions[2], $
                   TracerName_1, GridInfo_1, Unit,        DynRange,    $
-                  Month,        /L_Sfc,     _EXTRA=e
+                  Month,        /L_Sfc,     InvDiff=InvDiff, _EXTRA=e
 
       ; "Blue" - "Green" at 500 hPa
       PlotRatios, Data_500_2,   Data_500_3, Versions[1], Versions[2], $
                   TracerName_1, GridInfo_1, Unit,        DynRange,    $
-                  Month,        /L_500,     _EXTRA=e
+                  Month,        /L_Sfc,     InvDiff=InvDiff, _EXTRA=e
  
       ; "Blue" - "Red" at Sfc
       PlotRatios, Data_Sfc_1,   Data_Sfc_3, Versions[0], Versions[2], $
                   TracerName_1, GridInfo_1, Unit,        DynRange,    $
-                  Month,        /L_Sfc,     _EXTRA=e
+                  Month,        /L_Sfc,     InvDiff=InvDiff, _EXTRA=e
 
       ; "Blue" - "Red" at 500 hPa
       PlotRatios, Data_500_1,   Data_500_3, Versions[0], Versions[2], $
                   TracerName_1, GridInfo_1, Unit,        DynRange,    $
-                  Month,        /L_500,     _EXTRA=e
+                  Month,        /L_Sfc,     InvDiff=InvDiff, _EXTRA=e
 
       ; Plot the top title on each page  
       if ( D*4 mod ( Rows * Cols ) eq 0 ) then begin

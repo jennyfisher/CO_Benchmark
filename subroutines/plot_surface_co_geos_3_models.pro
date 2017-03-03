@@ -117,7 +117,7 @@ pro plot_surface_co_geos_3_models, pref1,  ptop1,  dlat1,   dlon1, model1, $
 
       ; Get CO
       COtmp = Get_Species_Geos( name, Date=Date, $
-                                Species=Cat1, Lat=Lat, Lon=Lon )
+                                Species=Cat1+'CO', Lat=Lat, Lon=Lon )
 
       ; Get pressure
       Pressuretmp = Get_Pressure_Geos( PName, PTOP=PTOP1, Lat=Lat, Lon=Lon )
@@ -142,7 +142,7 @@ pro plot_surface_co_geos_3_models, pref1,  ptop1,  dlat1,   dlon1, model1, $
 
       ; Get CO
       COtmp = Get_Species_Geos( name, Date=Date, $
-                                Species=Cat2, Lat=Lat, Lon=Lon )
+                                Species=Cat2+'CO', Lat=Lat, Lon=Lon )
 
       ; Get pressure
       Pressuretmp = Get_Pressure_Geos( PName, PTOP=PTOP2, Lat=Lat, Lon=Lon )
@@ -167,7 +167,7 @@ pro plot_surface_co_geos_3_models, pref1,  ptop1,  dlat1,   dlon1, model1, $
 
       ; Get CO
       COtmp = Get_Species_Geos( name, Date=Date, $
-                                Species=Cat3, Lat=Lat, Lon=Lon )
+                                Species=Cat3+'CO', Lat=Lat, Lon=Lon )
 
       ; Get pressure
       Pressuretmp = Get_Pressure_Geos( PName, PTOP=PTOP3, Lat=Lat, Lon=Lon )
@@ -218,7 +218,7 @@ pro plot_surface_co_geos_3_models, pref1,  ptop1,  dlat1,   dlon1, model1, $
          conum(i)    = inum
          comean(i)   = icomean
          comedian(i) = icomedian
-         costd(i)    = icostd
+         if icostd eq -999 then costd(i)=!Values.f_nan else costd(i) = icostd
          comin(i)    =icomin
          comax(i)    =icomax
       endfor
@@ -469,6 +469,13 @@ pro plot_surface_co_geos_3_models, pref1,  ptop1,  dlat1,   dlon1, model1, $
       xyouts, 0.04, 0.5, 'CO (ppb)', /normal, align=0.5, orientation=90, $
          charsize=1.2,color=1
       xyouts, 0.5, 0.96,title, /normal, align=0.5, charsize=1.2,color=1
+
+;      absdiff = out-out3
+;      reldiff = 100.*absdiff/out3
+;      if max(abs(absdiff)) ge 10 then $
+;         print,name_sta[kk],' Absolute ',min(absdiff),max(absdiff)
+;      if max(abs(reldiff)) ge 10 then $
+;         print,name_sta[kk],' Relative ',min(reldiff),max(reldiff)
    endfor
 
    ; Cleanup & quit 

@@ -3,6 +3,7 @@ pro plot_4lev_co_geos_3_models_mozaic, pref1, ptop1, dlat1, dlon1, model1, $
                                        pref2, ptop2, dlat2, dlon2, model2, $
                                        pref3, ptop3, dlat3, dlon3, model3, $
                                        plabel1, plabel2, plabel3,          $
+                                       cat1, cat2, cat3,                   $
                                        title, psname, max_station, filest, debug=debug
 
    ; NOTE: Now uses GET_PRESSURE_GEOS and GET_SPECIES_GEOS which can
@@ -124,7 +125,7 @@ pro plot_4lev_co_geos_3_models_mozaic, pref1, ptop1, dlat1, dlon1, model1, $
       if keyword_set(debug) then print,' -- Reading model file '+name
 
       ; Get CO & pressure
-      Datatmp     = Get_Species_Geos( name, Date=Date, Species='IJ-AVG-S__CO' )
+      Datatmp     = Get_Species_Geos( name, Date=Date, Species=Cat1+'CO' )
       Pressuretmp = Get_Pressure_Geos( PName, PTOP=PTOP1 )
 
       if i eq 0 then begin
@@ -146,7 +147,7 @@ pro plot_4lev_co_geos_3_models_mozaic, pref1, ptop1, dlat1, dlon1, model1, $
       if keyword_set(debug) then print,' -- Reading model file '+name
 
       ; Get CO & pressure
-      Datatmp     = Get_Species_Geos( name, Date=Date, Species='IJ-AVG-S__CO' )
+      Datatmp     = Get_Species_Geos( name, Date=Date, Species=Cat2+'CO' )
       Pressuretmp = Get_Pressure_Geos( PName, PTOP=PTOP2 )
 
       if i eq 0 then begin
@@ -168,7 +169,7 @@ pro plot_4lev_co_geos_3_models_mozaic, pref1, ptop1, dlat1, dlon1, model1, $
       if keyword_set(debug) then print,' -- Reading model file '+name
 
       ; Get CO & pressure
-      Datatmp     = Get_Species_Geos( name, Date=Date, Species='IJ-AVG-S__CO' )
+      Datatmp     = Get_Species_Geos( name, Date=Date, Species=Cat1+'CO' )
       Pressuretmp = Get_Pressure_Geos( PName, PTOP=PTOP3 )
 
       if i eq 0 then begin

@@ -33,10 +33,11 @@ mmonth=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
 
 open_device, olddevice,/ps,/color,filename=psname ;color plot
+!p.font = 0
 
 ; Specify directory with surface data 
 
-pre = './data/cmdl/newdata/'
+pre = './data/cmdl/Feb09/'
 
 ; --- read station & indice ---
 
@@ -96,7 +97,7 @@ ncount=ncount+1
     ix = k
     file=''
 
-    file=pre+name_sta(kk)+'.mn'
+    file=pre+name_sta(kk)+'.mn.2005'
 
     ilun = k+50
     openr,ilun,file
@@ -115,7 +116,7 @@ ncount=ncount+1
        conum(i)    = inum
        comean(i)   = icomean
        comedian(i) = icomedian
-       costd(i)    = icostd
+       if icostd eq -999 then costd(i)=!values.f_nan else costd(i) = icostd
        comin(i)    =icomin
        comax(i)    =icomax
  endfor

@@ -191,8 +191,8 @@ pro plot_cmdl_3_models_4_months, ext1, ext2, ext3, title,psname
 
    ; Define the range for y axis
 
-   loval=0
-   highval=250 
+   loval=20
+   highval=220 
 
    ; missing data
    missing = where(cmdl_data eq -999)
@@ -224,10 +224,10 @@ pro plot_cmdl_3_models_4_months, ext1, ext2, ext3, title,psname
    oplot, lat_sta,geos3_data(*,0),linestyle=3,color=4
    oplot, lat_sta,geos3_data(*,0),linestyle=3,psym=2,symsize=0.3,color=4 
 
-   xyouts,-30,220, mmonth[0], charsize = 1.2, /data, color=1
+   xyouts,-30,.9*highval, mmonth[0], charsize = 1.2, /data, color=1
 
    ; -- plot observed data --
-   plot, lat_sta, cmdl_data(*,2), xstyle=1,ystyle=1,$
+   plot, lat_sta, cmdl_data(*,3), xstyle=1,ystyle=1,$
       title=ltitle,linestyle=0,psym=-5,symsize=0.6, $
       xticks=6, min_val=-900, xrange=[-90,90],yrange=[loval,highval],$
       charsize=1.5, xmargin=[3,1], ymargin=[1.5,1],color=1,$
@@ -238,21 +238,21 @@ pro plot_cmdl_3_models_4_months, ext1, ext2, ext3, title,psname
    ; Now plot standard deviations
  
    for w = 0, 33 do begin
-      errbar = [cmdl_data(w,2)-cmdl_std(w,2),cmdl_data(w,2)+cmdl_std(w,2)]
+      errbar = [cmdl_data(w,3)-cmdl_std(w,3),cmdl_data(w,3)+cmdl_std(w,3)]
       oplot,  [lat_sta[w],lat_sta[w]],errbar,$
          linestyle=0,color=1
    endfor
 
-   oplot, lat_sta,geos_data(*,2),linestyle=1,color=2
-   oplot,lat_sta,geos_data(*,2),linestyle=1,psym=2,symsize=0.3,color=2  
+   oplot, lat_sta,geos_data(*,3),linestyle=1,color=2
+   oplot,lat_sta,geos_data(*,3),linestyle=1,psym=2,symsize=0.3,color=2  
 
-   oplot, lat_sta,geos2_data(*,2),linestyle=2,color=3
-   oplot, lat_sta,geos2_data(*,2),linestyle=2,psym=2,symsize=0.3,color=3 
+   oplot, lat_sta,geos2_data(*,3),linestyle=2,color=3
+   oplot, lat_sta,geos2_data(*,3),linestyle=2,psym=2,symsize=0.3,color=3 
 
-   oplot, lat_sta,geos3_data(*,2),linestyle=3,color=4
-   oplot, lat_sta,geos3_data(*,2),linestyle=3,psym=2,symsize=0.3,color=4 
+   oplot, lat_sta,geos3_data(*,3),linestyle=3,color=4
+   oplot, lat_sta,geos3_data(*,3),linestyle=3,psym=2,symsize=0.3,color=4 
 
-   xyouts,-30,220, mmonth[2], charsize = 1.2, /data, color=1
+   xyouts,-30,.9*highval, mmonth[3], charsize = 1.2, /data, color=1
 
    ; -- plot observed data --
 
@@ -281,11 +281,9 @@ pro plot_cmdl_3_models_4_months, ext1, ext2, ext3, title,psname
    oplot, lat_sta,geos3_data(*,6),linestyle=3,color=4
    oplot, lat_sta,geos3_data(*,6),linestyle=3,psym=2,symsize=0.3,color=4 
 
-   xyouts,-30,220, mmonth[6], charsize = 1.2, /data, color=1
+   xyouts,-30,.9*highval, mmonth[6], charsize = 1.2, /data, color=1
 
    ; -- plot observed data --
-   loval=0
-   highval=250
    plot, lat_sta, cmdl_data(*,9), xstyle=1,ystyle=1,$
       title=ltitle,linestyle=0,psym=-5,symsize=0.6, $
       xticks=6, min_val=-900, xrange=[-90,90],yrange=[loval,highval],$
@@ -311,7 +309,7 @@ pro plot_cmdl_3_models_4_months, ext1, ext2, ext3, title,psname
    oplot, lat_sta,geos3_data(*,9),linestyle=3,color=4
    oplot, lat_sta,geos3_data(*,9),linestyle=3,psym=2,symsize=0.3,color=4 
 
-   xyouts,-30,220, mmonth[9], charsize = 1.2, /data, color=1
+   xyouts,-30,.9*highval, mmonth[9], charsize = 1.2, /data, color=1
 
    xyouts, 0.04, 0.5, 'CO (ppb)', /normal, align=0.5, orientation=90, $
       charsize=1.2,color=1

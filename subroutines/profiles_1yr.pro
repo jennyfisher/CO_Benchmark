@@ -113,9 +113,9 @@
 ;-----------------------------------------------------------------------
 
 
-pro PlotProf, Data1,      Data2,    Version1, Version2, $
-              TracerName, GridInfo, Unit,     DynRange, $
-              Month,      S15=S15,    N42=N42,  _EXTRA=e
+pro PlotProf, Data1,      Data2,    Version1,  Version2, $
+              TracerName, GridInfo, Unit,      DynRange, $
+              Month,      SLat=SLat,    NLat=NLat, InvDiff=InvDiff, _EXTRA=e
    
    ;====================================================================
    ; Internal routine PLOTPROF plots either the difference lon-alt 
@@ -125,17 +125,20 @@ pro PlotProf, Data1,      Data2,    Version1, Version2, $
    FORWARD_FUNCTION Get_Diff_Range
 
    ; Version string
-   VerStr = Version2 + ' - ' + Version1
+   if ( Keyword_Set( InvDiff ) ) then      $
+      VerStr = Version1 + ' - ' + Version2 $
+   else                                    $
+      VerStr = Version2 + ' - ' + Version1
 
-   ; Plot title for 15S
-   if ( Keyword_Set( S15 ) )                                     $
-      then Title = VerStr     + '!C!C'                   +       $
-                   TracerName + ' - Diff along 15S for ' + Month
+   ; Plot title
+   if ( n_elements(SLat) ne 0 ) then $
+      latname = string(SLat,'(i2)')+'S'
+   if ( n_elements(NLat) ne 0 ) then $
+      latname = string(NLat,'(i2)')+'N'
 
-   ; Plot title for 42N
-   if ( Keyword_Set( N42 ) )                                     $
-      then Title = VerStr     + '!C!C'                   +       $
-                   TracerName + ' - Diff along 42N for ' + Month
+   Title = VerStr  + '!C!C'                   +       $
+                   TracerName + ' - Diff along '+     $
+		   latname + ' for ' + Month
 
    ; Number of colorbar tickmarks
    Divisions = ColorBar_NDiv( 8 )
@@ -147,6 +150,9 @@ pro PlotProf, Data1,      Data2,    Version1, Version2, $
 
    ; Compute difference
    Diff = Data2 - Data1
+
+   ; Plot Data1 - Data2 if requested
+   if ( Keyword_Set( InvDiff ) ) then Diff = -1. * Diff
 
    ; If /DYNRANGE is set, then plot the entire dyn range of data
    ; (centered upon zero).  Otherwise fix the min & max of the data 
@@ -214,7 +220,8 @@ end
 pro Profiles_1yr, Files, AltRange, Tracers, Versions,      $
                   Categories = Categories,                 $
                   DynRange=DynRange,       Month=Month,    $
-                  OutFileName=OutFileName, PS=PS, _EXTRA=e
+                  SLat=SLat,               NLat=NLat,      $
+                  OutFileName=OutFileName, PS=PS, InvDiff=InvDiff, _EXTRA=e
  
    ;====================================================================
    ; Initialization
@@ -241,9 +248,12 @@ pro Profiles_1yr, Files, AltRange, Tracers, Versions,      $
       Cat2 = Categories[1]
       Cat3 = Categories[2]
    endelse
+   if ~Keyword_Set( InvDiff ) then InvDiff = 0
+   if ( N_elements( SLat  ) eq 0 ) then SLat = -15
+   if ( N_elements( NLat  ) eq 0 ) then NLat = 42
 
    ; Title for the top of the plot
-   TopTitle = 'GEOS-Chem Longitudinal Difference Profiles at 15S and 42N!C!C'
+   TopTitle = 'GEOS-Chem Longitudinal Difference Profiles!C!C'
 
    ; Save original color table and !MYCT sysvar
    TvLct, R, G, B, /Get
@@ -351,65 +361,70 @@ pro Profiles_1yr, Files, AltRange, Tracers, Versions,      $
       ;-----------------------------------------------------------------
       ; Extract data arrays for surface and 500 hPa
       ;-----------------------------------------------------------------
+      if SLat gt 0 then begin
+         SLat_save = SLat
+         SLat = -1.*SLat
+      endif else SLat_save = SLat
 
-      ; Extract data along 15S -- 1st model
-      Data_15S_1 = CTM_Extract( Data_1,                                     $
+      ; Extract data along SLat -- 1st model
+      Data_SLat_1 = CTM_Extract( Data_1,                                     $
                                 ModelInfo=ModelInfo_1, GridInfo=GridInfo_1, $
-                                Lon=[-180,180], Lat=[-15,-15], Alt=AltRange )
+                                Lon=[-180,180], Lat=[SLat,SLat], Alt=AltRange )
 
-      ; Extract data along 15S -- 2nd model
-      Data_15S_2 = CTM_Extract( Data_2,                                     $
+      ; Extract data along SLat -- 2nd model
+      Data_SLat_2 = CTM_Extract( Data_2,                                     $
                                 ModelInfo=ModelInfo_1, GridInfo=GridInfo_1, $
-                                Lon=[-180,180], Lat=[-15,-15], Alt=AltRange )
+                                Lon=[-180,180], Lat=[SLat,SLat], Alt=AltRange )
 
-      ; Extract data along 15S -- 2nd model
-      Data_15S_3 = CTM_Extract( Data_3,                                     $
+      ; Extract data along SLat -- 2nd model
+      Data_SLat_3 = CTM_Extract( Data_3,                                     $
                                 ModelInfo=ModelInfo_1, GridInfo=GridInfo_1, $
-                                Lon=[-180,180], Lat=[-15,-15], Alt=AltRange )
+                                Lon=[-180,180], Lat=[SLat,SLat], Alt=AltRange )
 
-      ; Extract data along 42N -- 1st model
-      Data_42N_1 = CTM_Extract( Data_1,                                     $
+      ; Extract data along NLat -- 1st model
+      Data_NLat_1 = CTM_Extract( Data_1,                                     $
                                 ModelInfo=ModelInfo_1, GridInfo=GridInfo_1, $
-                                Lon=[-180,180], Lat=[42,42], Alt=AltRange )
+                                Lon=[-180,180], Lat=[NLat,NLat], Alt=AltRange )
 
-      ; Extract data along 42N -- 2nd model
-      Data_42N_2 = CTM_Extract( Data_2,                                     $
+      ; Extract data along NLat -- 2nd model
+      Data_NLat_2 = CTM_Extract( Data_2,                                     $
                                 ModelInfo=ModelInfo_1, GridInfo=GridInfo_1, $
-                                Lon=[-180,180], Lat=[42,42], Alt=AltRange )
+                                Lon=[-180,180], Lat=[NLat,NLat], Alt=AltRange )
 
-      ; Extract data along 42N -- 2nd model
-      Data_42N_3 = CTM_Extract( Data_3,                                     $
+      ; Extract data along NLat -- 2nd model
+      Data_NLat_3 = CTM_Extract( Data_3,                                     $
                                 ModelInfo=ModelInfo_1, GridInfo=GridInfo_1, $
-                                Lon=[-180,180], Lat=[42,42], Alt=AltRange )
+                                Lon=[-180,180], Lat=[NLat,NLat], Alt=AltRange )
 
       ; We no longer need the large arrays
       UnDefine, Data_1
       UnDefine, Data_2
       UnDefine, Data_3
+      SLat = SLat_save
 
       ;-----------------------------------------------------------------
       ; Plot the data!
       ;-----------------------------------------------------------------
 
-      ; "Blue" - "Green" along 15S
-      PlotProf, Data_15S_2,   Data_15S_3, Versions[1], Versions[2], $
+      ; "Blue" - "Green" along SLat
+      PlotProf, Data_SLat_2,   Data_SLat_3, Versions[1], Versions[2], $
                 TracerName_1, GridInfo_1, Unit,        DynRange,    $
-                Month,        /S15,       _EXTRA=e
+                Month,        SLat=SLat,  InvDiff=InvDiff, _EXTRA=e
 
-      ; "Blue" - "Green" along 42N
-      PlotProf, Data_42N_2,   Data_42N_3, Versions[1], Versions[2], $
+      ; "Blue" - "Green" along NLat
+      PlotProf, Data_NLat_2,   Data_NLat_3, Versions[1], Versions[2], $
                 TracerName_1, GridInfo_1, Unit,        DynRange,    $
-                Month,        /N42,       _EXTRA=e
+                Month,        NLat=NLat,  InvDiff=InvDiff, _EXTRA=e
  
-      ; "Blue" - "Red" along 15S
-      PlotProf, Data_15S_1,   Data_15S_3, Versions[0], Versions[2], $
+      ; "Blue" - "Red" along SLat
+      PlotProf, Data_SLat_1,   Data_SLat_3, Versions[0], Versions[2], $
                 TracerName_1, GridInfo_1, Unit,        DynRange,    $
-                Month,        /S15,       _EXTRA=e
+                Month,        SLat=SLat,  InvDiff=InvDiff, _EXTRA=e
 
-      ; "Blue" - "Red" along 42N
-      PlotProf, Data_42N_1,   Data_42N_3, Versions[0], Versions[2], $
+      ; "Blue" - "Red" along NLat
+      PlotProf, Data_NLat_1,   Data_NLat_3, Versions[0], Versions[2], $
                 TracerName_1, GridInfo_1, Unit,        DynRange,    $
-                Month,        /N42,       _EXTRA=e
+                Month,        NLat=NLat,  InvDiff=InvDiff, _EXTRA=e
 
       ; Plot the top title on each page  
       if ( D*4 mod ( Rows * Cols ) eq 0 ) then begin

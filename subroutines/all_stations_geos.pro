@@ -1,6 +1,6 @@
 ; $Id: all_stations_geos.pro,v 1.3 2008/03/31 18:51:06 bmy Exp $
-pro all_stations_geos, species1, species, max_sta, pref,  plabel, $
-                       ptop,     dlon,    dlat,    model, ext, debug = debug
+pro all_stations_geos, species, category, max_sta, pref,  plabel, $
+                       ptop,    dlon,     dlat,    model, ext, debug = debug
 
    ; ALL_STATIONS_GEOS: Saves out files of "average" GEOS-Chem data
    ; over the same area as various aircraft campaigns.  Originally
@@ -25,7 +25,7 @@ pro all_stations_geos, species1, species, max_sta, pref,  plabel, $
    Nalt  = Grid1.LMX
 
    ; Read station data
-   filest      = './data/'+species1+'.stations'
+   filest      = './data/'+species+'.stations'
    openr, usta, filest, /get_lun
    iname_sta   =''
    ititle_sta  =''
@@ -69,7 +69,7 @@ pro all_stations_geos, species1, species, max_sta, pref,  plabel, $
       if keyword_set(debug) then print,' -- Reading model file '+name
 
       ; Get data & pressure
-      Datatmp     = Get_Species_Geos( Name, Species=Species )
+      Datatmp     = Get_Species_Geos( Name, Species=Category+Species )
       Pressuretmp = Get_Pressure_Geos( PName, PTOP=PTOP )
       
       if i eq 0 then begin

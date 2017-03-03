@@ -109,7 +109,8 @@
 
 pro PlotDiff, Data1,       Data2,       Version1,    Version2, $
               TracerName,  GridInfo,    Unit,        DynRange, $
-              Month,       L_Sfc=L_Sfc, L_500=L_500, _EXTRA=e
+              Month,       L_Sfc=L_Sfc, L_500=L_500, InvDiff=InvDiff,$
+              _EXTRA=e
    
    ;====================================================================
    ; Internal routine PLOTDIFF plots either the surface or 
@@ -117,7 +118,10 @@ pro PlotDiff, Data1,       Data2,       Version1,    Version2, $
    ;====================================================================
 
    ; Version string
-   VerStr = Version2 + ' - ' + Version1
+   if ( Keyword_Set( InvDiff ) ) then      $
+      VerStr = Version1 + ' - ' + Version2 $
+   else                                    $
+      VerStr = Version2 + ' - ' + Version1
 
    ; Plot title for surface
    if ( Keyword_Set( L_Sfc ) )                                  $
@@ -136,6 +140,9 @@ pro PlotDiff, Data1,       Data2,       Version1,    Version2, $
    XMid = GridInfo.XMid
    YMid = GridInfo.YMid[ 1:GridInfo.JMX-2 ]
    Diff = Data2[*,1:GridInfo.JMX-2] - Data1[*,1:GridInfo.JMX-2]
+
+   ; Plot Data1 - Data2 if requested
+   if ( Keyword_Set( InvDiff ) ) then Diff = -1. * Diff
 
    if ( DynRange ) then begin
 
@@ -192,8 +199,9 @@ end
 ;------------------------------------------------------------------------------
 
 pro Differences_1yr, Files,             Tracers, Versions,                $
+                     Categories = Categories,                             $
                      DynRange=DynRange, PS=PS,   OutFileName=OutFileName, $
-                     Month=Month,       _EXTRA=e
+                     Month=Month,       InvDiff=InvDiff, _EXTRA=e
  
    ;====================================================================
    ; Initialization
@@ -210,6 +218,16 @@ pro Differences_1yr, Files,             Tracers, Versions,                $
    DynRange = Keyword_Set( DynRange )
    if ( N_Elements( Month       ) ne 1 ) then Month       = ''
    if ( N_Elements( OutFileName ) ne 1 ) then OutFileName = 'ratios.ps'
+   if ( N_elements( Categories  ) eq 0 ) then begin
+      Cat1 = 'IJ-AVG-$'
+      Cat2 = 'IJ-AVG-$'
+      Cat3 = 'IJ-AVG-$'
+   endif else begin
+      Cat1 = Categories[0]
+      Cat2 = Categories[1]
+      Cat3 = Categories[2]
+   endelse
+   if ~Keyword_Set( InvDiff ) then InvDiff = 0
 
    ; Title for the top of the plot
    TopTitle = 'GEOS-Chem Difference Maps at surface and 500 hPa!C!C'
@@ -226,15 +244,15 @@ pro Differences_1yr, Files,             Tracers, Versions,                $
    ;====================================================================
    
    ; Read tracers from the 1st file (red data pts)
-   CTM_Get_Data, DataInfo_1, 'IJ-AVG-$', $
+   CTM_Get_Data, DataInfo_1, Cat1, $
       File=Files[0], Tracer=Tracers, /Quiet
 
    ; Read tracers from the 2nd file (green data pts)
-   CTM_Get_Data, DataInfo_2, 'IJ-AVG-$', $
+   CTM_Get_Data, DataInfo_2, Cat2, $
       File=Files[1], Tracer=Tracers, /Quiet
 
    ; Read tracers from the 3rd file (blue data pts)
-   CTM_Get_Data, DataInfo_3, 'IJ-AVG-$', $
+   CTM_Get_Data, DataInfo_3, Cat3, $
       File=Files[2], Tracer=Tracers, /Quiet
 
    ;------------------------------
@@ -258,6 +276,7 @@ pro Differences_1yr, Files,             Tracers, Versions,                $
 
    ; Open the plot device and initialize the page
    Open_Device, /Color, Bits=8, /Portrait, PS=PS, File=OutFileName, _EXTRA=e
+   !p.font = 0
   
    ; Multiple panels per page
    MultiPanel, Rows=Rows, Cols=Cols, Margin=[ 0.03, 0.03, 0.03, 0.03 ]
@@ -359,22 +378,22 @@ pro Differences_1yr, Files,             Tracers, Versions,                $
       ; "Blue" - "Green" at Sfc
       PlotDiff, Data_Sfc_2,   Data_Sfc_3, Versions[1], Versions[2], $
                 TracerName_1, GridInfo_1, Unit,        DynRange,    $
-                Month,        /L_Sfc,     _EXTRA=e
+                Month,        /L_Sfc,     InvDiff=InvDiff, _EXTRA=e
 
       ; "Blue" - "Green" at 500 hPa
       PlotDiff, Data_500_2,   Data_500_3, Versions[1], Versions[2], $
                 TracerName_1, GridInfo_1, Unit,        DynRange,    $
-                Month,        /L_500,     _EXTRA=e
+                Month,        /L_Sfc,     InvDiff=InvDiff, _EXTRA=e
  
       ; "Blue" - "Red" at Sfc
       PlotDiff, Data_Sfc_1,   Data_Sfc_3, Versions[0], Versions[2], $
                 TracerName_1, GridInfo_1, Unit,        DynRange,    $
-                Month,        /L_Sfc,     _EXTRA=e
+                Month,        /L_Sfc,     InvDiff=InvDiff, _EXTRA=e
 
       ; "Blue" - "Red" at 500 hPa
       PlotDiff, Data_500_1,   Data_500_3, Versions[0], Versions[2], $
                 TracerName_1, GridInfo_1, Unit,        DynRange,    $
-                Month,        /L_500,     _EXTRA=e
+                Month,        /L_Sfc,     InvDiff=InvDiff, _EXTRA=e
 
       ; Plot the top title on each page  
       if ( D*4 mod ( Rows * Cols ) eq 0 ) then begin

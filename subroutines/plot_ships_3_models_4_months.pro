@@ -37,9 +37,10 @@ mmonth=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
 
 
 open_device, olddevice,/ps,/color,filename=psname ;color plot
+!p.font=0
 
 ; Specify directory with surface data 
-pre = './data/cmdl/newdata/'
+pre = './data/cmdl/Feb09/'
 
 ; Define arrays for storing data
 geos_data=fltarr(13,12)
@@ -105,7 +106,7 @@ ncount=ncount+1
     ix = k
     file=''
 
-    file=pre+name_sta(kk)+'.mn'
+    file=pre+name_sta(kk)+'.mn.2005'
 
     ilun = k+50
     openr,ilun,file
@@ -124,7 +125,7 @@ ncount=ncount+1
        conum(i)    = inum
        comean(i)   = icomean
        comedian(i) = icomedian
-       costd(i)    = icostd
+       if icostd eq -999 then costd(i)=!values.f_nan else costd(i) = icostd
        comin(i)    =icomin
        comax(i)    =icomax
  endfor
@@ -189,7 +190,7 @@ endfor
 ; Define the range for y axis
 
 loval=30
-highval=180 
+highval=160 
 
 ; -- plot observed data --
 
@@ -219,7 +220,7 @@ highval=180
           ; Prior to 9/23/03:
           ;xyouts,-80,220, mmonth[0], charsize = 1.2, /data, color=1
           ;------------------------------------------------------------------
-          xyouts, 1, highval-50, mmonth[0], charsize = 1.2, /data, color=1
+          xyouts, 1, highval*.9, mmonth[0], charsize = 1.2, /data, color=1
 
 ; -- plot observed data --
 
@@ -250,7 +251,7 @@ highval=180
           ; Prior to 9/23/03:
           ;xyouts,-80,220, mmonth[3], charsize = 1.2, /data, color=1
           ;------------------------------------------------------------------
-          xyouts, 1, highval-50, mmonth[3], charsize = 1.2, /data, color=1
+          xyouts, 1, highval*.9, mmonth[3], charsize = 1.2, /data, color=1
 
 ; -- plot observed data --
 
@@ -281,12 +282,10 @@ highval=180
           ; Prior to 9/23/03:
           ;xyouts,-80,220, mmonth[6], charsize = 1.2, /data, color=1
           ;-------------------------------------------------------------------
-          xyouts, 1, highval-50, mmonth[6], charsize = 1.2, /data, color=1
+          xyouts, 1, highval*.9, mmonth[6], charsize = 1.2, /data, color=1
 
 ; -- plot observed data --
 
-loval=0
-highval=250
      plot, findgen(13)+1, cmdl_data(*,9), xstyle=1,ystyle=1,$
         title=ltitle,linestyle=0,psym=-5,symsize=0.6, $
         xticks=14, min_val=-900, xrange=[0,14],yrange=[loval,highval],$
@@ -314,7 +313,7 @@ highval=250
           ; Prior to 9/23/03:
           ;xyouts,-80,220, mmonth[9], charsize = 1.2, /data, color=1
           ;----------------------------------------------------------------------
-          xyouts, 1, highval-50, mmonth[9], charsize = 1.2, /data, color=1
+          xyouts, 1, highval*.9, mmonth[9], charsize = 1.2, /data, color=1
 
 xyouts, 0.04, 0.5, 'CO (ppb)', /normal, align=0.5, orientation=90, $
   charsize=1.2,color=1

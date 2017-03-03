@@ -1,6 +1,6 @@
 ; $Id: all_stations_geos_mozaic.pro,v 1.5 2010/10/04 15:21:23 bmy Exp $
-pro all_stations_geos_mozaic, species1, species, max_sta, pref,  plabel,  $
-                              ptop,     dlon,    dlat,    model, ext, debug = debug
+pro all_stations_geos_mozaic, species, category, max_sta, pref,  plabel,  $
+                              ptop,    dlon,     dlat,    model, ext, debug = debug
 
    ; ALL_STATIONS_GEOS_MOZAIC: Saves out files of "average" 
    ; GEOS-Chem data over the same area as various MOZAIC observations.  
@@ -30,7 +30,7 @@ pro all_stations_geos_mozaic, species1, species, max_sta, pref,  plabel,  $
    Nalt  = Grid1.LMX
 
    ; Read data
-   filest = './data/'+species1+'.stations.new.mozaic'
+   filest = './data/'+species+'.stations.new.mozaic'
 
    ; Read station data
    openr, usta, filest, /get_lun
@@ -81,7 +81,7 @@ pro all_stations_geos_mozaic, species1, species, max_sta, pref,  plabel,  $
       if keyword_set(debug) then print,' -- Reading model file '+name
  
       ; Get O3 & pressure 
-      Datatmp     = Get_Species_Geos( name, Species='IJ-AVG-S__'+Species1 )
+      Datatmp     = Get_Species_Geos( name, Species=Category+Species )
       Pressuretmp = Get_Pressure_Geos( PName, PTOP=PTOP )
 
       if i eq 0 then begin

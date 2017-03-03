@@ -8,6 +8,7 @@ pro plot_station_profiles_co_3_models_0_5,  $
         pref2, ptop2, dlat2, dlon2, model2, $
         pref3, ptop3, dlat3, dlon3, model3, $
         plabel1, plabel2, plabel3,          $
+        Cat1, Cat2, Cat3,                   $
         title, psname, max_station, filest
 
    ; NOTE: Now uses GET_PRESSURE_GEOS and GET_SPECIES_GEOS, which can
@@ -229,7 +230,7 @@ pro plot_station_profiles_co_3_models_0_5,  $
       ;=======================================================================
 
       ; Get CO & pressure
-      CO       = Get_Species_Geos( name1, Date=Date, Species='IJ-AVG-S__CO' )
+      CO       = Get_Species_Geos( name1, Date=Date, Species=Cat1+'CO')
       Pressure = Get_Pressure_Geos( pname1, PTOP=PTOP1 )
 
       ; Get the lon & lat indices corresponding to this station
@@ -266,7 +267,7 @@ pro plot_station_profiles_co_3_models_0_5,  $
       ;=======================================================================
       
       ; Get CO & pressure
-      CO       = Get_Species_Geos( name2, Date=Date, Species='IJ-AVG-S__CO')
+      CO       = Get_Species_Geos( name2, Date=Date, Species=Cat1+'CO')
       Pressure = Get_Pressure_Geos( pname2, PTOP=PTOP1 )
 
       ; Get the lon & lat indices corresponding to this station
@@ -303,7 +304,7 @@ pro plot_station_profiles_co_3_models_0_5,  $
       ;=======================================================================
 
       ; Get CO & pressure
-      CO       = Get_Species_Geos( name3, Date=Date, Species='IJ-AVG-S__CO' )
+      CO       = Get_Species_Geos( name3, Date=Date, Species=Cat1+'CO')
       Pressure = Get_Pressure_Geos( pname3, PTOP=PTOP1, Lat=Lat, Lon=Lon )
 
       ; Get the lon & lat indices corresponding to this station
@@ -340,7 +341,7 @@ pro plot_station_profiles_co_3_models_0_5,  $
       ;=======================================================================
 
       ; Get CO & pressure
-      CO       = Get_Species_Geos( name4, Date=Date, Species='IJ-AVG-S__CO' )
+      CO       = Get_Species_Geos( name4, Date=Date, Species=Cat1+'CO')
       Pressure = Get_Pressure_Geos( pname4, PTOP=PTOP1 )
 
       ; Get the lon & lat indices corresponding to this station
@@ -405,7 +406,7 @@ pro plot_station_profiles_co_3_models_0_5,  $
       ;=====================================================================
       
       ; Get CO & pressure
-      CO       = Get_Species_Geos( name1_3, Date=Date, Species='IJ-AVG-S__CO' )
+      CO       = Get_Species_Geos( name1_3, Date=Date, Species=Cat3+'CO')
       Pressure = Get_Pressure_Geos( pname1_3, PTOP=PTOP3 )
 
       ; Get the lon & lat indices corresponding to this station
@@ -442,7 +443,7 @@ pro plot_station_profiles_co_3_models_0_5,  $
       ;===================================================================== 
 
       ; Get CO & pressure
-      CO       = Get_Species_Geos( name2_3, Date=Date, Species='IJ-AVG-S__CO' )
+      CO       = Get_Species_Geos( name2_3, Date=Date, Species=Cat3+'CO')
       Pressure = Get_Pressure_Geos( pname2_3, PTOP=PTOP3, Lat=Lat, Lon=Lon )
 
       ; Get the lon & lat indices corresponding to this station
@@ -479,7 +480,7 @@ pro plot_station_profiles_co_3_models_0_5,  $
       ;===================================================================== 
       
       ; Get CO & pressure
-      CO       = Get_Species_Geos( name3_3, Date=Date, Species='IJ-AVG-S__CO' )
+      CO       = Get_Species_Geos( name3_3, Date=Date, Species=Cat3+'CO')
       Pressure = Get_Pressure_Geos( pname3_3, PTOP=PTOP3, Lat=Lat, Lon=Lon )
 
       ; Get the lon & lat indices corresponding to this station
@@ -516,7 +517,7 @@ pro plot_station_profiles_co_3_models_0_5,  $
       ;=====================================================================
 
       ; Get CO & pressure
-      CO       = Get_Species_Geos( name4_3, Date=Date, Species='IJ-AVG-S__CO' )
+      CO       = Get_Species_Geos( name4_3, Date=Date, Species=Cat3+'CO')
       Pressure = Get_Pressure_Geos( pname4_3, PTOP=PTOP3 )
 
       ; Get the lon & lat indices corresponding to this station
@@ -579,7 +580,7 @@ pro plot_station_profiles_co_3_models_0_5,  $
       ;===================================================================== 
       
       ; Get CO & pressure
-      CO       = Get_Species_Geos( name1_2, Date=Date, Species='IJ-AVG-S__CO' )
+      CO       = Get_Species_Geos( name1_2, Date=Date, Species=Cat2+'CO')
       Pressure = Get_Pressure_Geos( pname1_2,  PTOP=PTOP2 )
       
       ; Get the lon & lat indices corresponding to this station
@@ -616,7 +617,7 @@ pro plot_station_profiles_co_3_models_0_5,  $
       ;===================================================================== 
       
       ; Get CO & pressure
-      CO       = Get_Species_Geos( name2_2, Date=Date, Species='IJ-AVG-S__CO' )
+      CO       = Get_Species_Geos( name2_2, Date=Date, Species=Cat2+'CO')
       Pressure = Get_Pressure_Geos( pname2_2, PTOP=PTOP2, Lat=Lat, Lon=Lon )
       
       ; Get the lon & lat indices corresponding to this station
@@ -653,7 +654,7 @@ pro plot_station_profiles_co_3_models_0_5,  $
       ;===================================================================== 
 
       ; Get CO & pressure
-      CO       = Get_Species_Geos( name3_2, Date=Date, Species='IJ-AVG-S__CO' )
+      CO       = Get_Species_Geos( name3_2, Date=Date, Species=Cat2+'CO')
       Pressure = Get_Pressure_Geos( pname3_2, PTOP=PTOP2 )
 
       ; Get the lon & lat indices corresponding to this station
@@ -690,7 +691,7 @@ pro plot_station_profiles_co_3_models_0_5,  $
       ;===================================================================== 
 
       ; Get CO & pressure
-      CO       = Get_Species_Geos( name4_2, Date=Date, Species='IJ-AVG-S__CO' )
+      CO       = Get_Species_Geos( name4_2, Date=Date, Species=Cat2+'CO')
       Pressure = Get_Pressure_Geos( pname4_2, PTOP=PTOP2 )
 
       ; Get the lon & lat indices corresponding to this station
